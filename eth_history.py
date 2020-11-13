@@ -20,6 +20,9 @@ TOKEN = {
     "UNI": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
 }
 
+ALL_ADDRESS = True
+MY_ADDRESS_LIST = ["0x9c9800ea23ea152b57dc9f2d2e0d85b2fc027c44"]
+
 
 def sync_token_his_info():
     """
@@ -59,8 +62,13 @@ def sync_token_his_info():
                 if ("0xf6a4932f" not in v_in):
                     continue
                 v_from = tx.get("from", "")
-                if v_from and (str(v_from).lower() in ["0x9c9800ea23eA152B57DC9f2D2E0D85B2fC027C44".lower()]):
+                if not v_from:
+                    continue
+                if ALL_ADDRESS:
                     history.append(tx)
+                else:
+                    if str(v_from).lower() in MY_ADDRESS_LIST:
+                        history.append(tx)
 
             for his in history:
                 txid = his.get("hash")
