@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#encoding=utf-8
+# encoding=utf-8
 import json
 import requests
 import redis
@@ -9,6 +9,7 @@ from flask import Flask, request, make_response, jsonify
 app = Flask(__name__)
 
 rt = redis.Redis(host='127.0.0.1', port=6379)
+
 
 @app.route('/')
 def main():
@@ -190,10 +191,8 @@ def history():
     return make_response(jsonify(result))
 
 
-
 if __name__ == "__main__":
     host = "0.0.0.0"
     port = 18761
     debug = False
     app.run(host=host, port=port, debug=debug)
-

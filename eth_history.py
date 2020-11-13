@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-#encoding=utf-8
+# encoding=utf-8
 import json
 import requests
 import redis
 import time
 
 
-def sync_his_info():
+def sync_token_his_info():
     """
     同步历史记录
     """
@@ -24,10 +24,7 @@ def sync_his_info():
 
         synced_block_number = int(rt.get(sync_his_key))
 
-        #print(100*"*", synced_block_number, new_block_num)
-
-        for num in range(synced_block_number+1, new_block_num):
-            #print(10*"*", 'sync:', num)
+        for num in range(synced_block_number + 1, new_block_num):
             block_num = hex(int(num))
             data = {"jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": [block_num, True], "id": 1}
             res = requests.post(url, json=data)
@@ -76,5 +73,4 @@ def sync_his_info():
 
 
 if __name__ == "__main__":
-    sync_his_info()
-
+    sync_token_his_info()
