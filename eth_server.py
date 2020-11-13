@@ -92,58 +92,98 @@ def block(contract):
     return make_response(jsonify(info))
 
 
-@app.route('/pending')
-def pending():
+@app.route('/pending/<string:contract>/')
+def pending(contract):
     """
     查询pending相关信息
     """
-    math = []
-    data = {"jsonrpc": "2.0", "method": "txpool_content", "params": [], "id": 1}
-    res = requests.post(NODE_URL, json=data)
-    mempool_result = res.json()
+    if not contract or len(str(contract)) != 42:
+        pending_result = {
+            "message": "failed: invalid contract",
+            "contract": contract
+        }
+    else:
+        token_contract = str(contract).lower()
+        token_symbol = CONTRACT_TOKEN[token_contract]
+        if not token_symbol:
+            pending_result = {
+                "message": "failed: not support contract",
+                "contract": token_contract
+            }
+        else:
+            math = []
+            data = {"jsonrpc": "2.0", "method": "txpool_content", "params": [], "id": 1}
+            res = requests.post(NODE_URL, json=data)
+            mempool_result = res.json()
 
-    datas = mempool_result.get("result")
-    pending = datas.get("pending", {})
-    queued = datas.get("queued", {})
+            datas = mempool_result.get("result")
+            pending = datas.get("pending", {})
+            queued = datas.get("queued", {})
 
-    gas_data = {"jsonrpc": "2.0", "method": "eth_gasPrice", "params": [], "id": 1}
-    res_1 = requests.post(NODE_URL, json=gas_data)
-    rt = res_1.json()
-    gas_price = int(rt.get("result", "0"), base=16)
+            gas_data = {"jsonrpc": "2.0", "method": "eth_gasPrice", "params": [], "id": 1}
+            res_1 = requests.post(NODE_URL, json=gas_data)
+            rt = res_1.json()
+            gas_price = int(rt.get("result", "0"), base=16)
 
-    for txs in pending.values():
-        for tx in txs.values():
-            v_in = tx.get("input", "")
-            from_info = tx.get("from", "")
-            gasPrice = int(tx.get("gasPrice", "0"), base=16)
-            # txid = tx.get("hash", "")
-            if not from_info:
-                continue
-            # if v_in and ("0xf6a4932f" in v_in) and (gasPrice > (gas_price - 5000000000)):
-            if v_in and ("0xf6a4932f" in v_in) and (gasPrice > gas_price):
-                math.append(tx)
+            for txs in pending.values():
+                for tx in txs.values():
+                    v_input = tx.get("input", "")
+                    from_info = tx.get("from", "")
+                    gasPrice = int(tx.get("gasPrice", "0"), base=16)
+                    if not from_info:
+                        continue
+                    # if v_in and ("0xf6a4932f" in v_in) and (gasPrice > (gas_price - 5000000000)):
+                    if not v_input:
+                        continue
+                    v_to = tx.get("to", "").lower()
+                    if not v_to:
+                        continue
+                    if ("0xf6a4932f" not in v_input):
+                        continue
+                    if (gasPrice < gas_price):
+                        continue
+                    if v_to == NEST_COCNTRACT:
+                        math.append(tx)
+                    else:
+                        if (token_contract.replace("0x", "") in v_input):
+                            math.append(tx)
 
-    for txs in queued.values():
-        for tx in txs.values():
-            v_in = tx.get("input", "")
-            from_info = tx.get("from", "")
-            gasPrice = int(tx.get("gasPrice", "0"), base=16)
-            # txid = tx.get("hash", "")
-            if not from_info:
-                continue
-            # if v_in and ("0xf6a4932f" in v_in) and (gasPrice > (gas_price - 5000000000)):
-            if v_in and ("0xf6a4932f" in v_in) and (gasPrice > gas_price):
-                math.append(tx)
-    # sorted_math = sorted(math, key=lambda x: x['gasPrice'], reverse=True)
-    # ss = sorted_math[0] if sorted_math else {}
-    ss = math[0] if math else {}
-    gasPrice = int(ss.get("gasPrice", "0"), base=16)
+            for txs in queued.values():
+                for tx in txs.values():
+                    v_input = tx.get("input", "")
+                    from_info = tx.get("from", "")
+                    gasPrice = int(tx.get("gasPrice", "0"), base=16)
+                    if not from_info:
+                        continue
+                    if not v_input:
+                        continue
+                    # if v_in and ("0xf6a4932f" in v_in) and (gasPrice > (gas_price - 5000000000)):
+                    if not v_input:
+                        continue
+                    v_to = tx.get("to", "").lower()
+                    if not v_to:
+                        continue
+                    if ("0xf6a4932f" not in v_input):
+                        continue
+                    if (gasPrice < gas_price):
+                        continue
+                    if v_to == NEST_COCNTRACT:
+                        math.append(tx)
+                    else:
+                        if (token_contract.replace("0x", "") in v_input):
+                            math.append(tx)
+            # sorted_math = sorted(math, key=lambda x: x['gasPrice'], reverse=True)
+            # ss = sorted_math[0] if sorted_math else {}
+            ss = math[0] if math else {}
+            gasPrice = int(ss.get("gasPrice", "0"), base=16)
 
-    pending_result = {
-        "count": len(math),
-        "txgasPrice": gasPrice,
-        "bestgasPrice": gas_price
-    }
+            pending_result = {
+                "count": len(math),
+                "txgasPrice": gasPrice,
+                "bestgasPrice": gas_price,
+                "token_symbol": token_symbol,
+                "token_contract": token_contract
+            }
     return make_response(jsonify(pending_result))
 
 
