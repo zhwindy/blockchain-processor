@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#encoding=utf-8
+# encoding=utf-8
 import json
 import requests
 import redis
@@ -39,4 +39,3 @@ def sync_pending_info():
 
 if __name__ == "__main__":
     sync_pending_info()
-
