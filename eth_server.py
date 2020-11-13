@@ -26,26 +26,33 @@ def main():
     return make_response(jsonify(data))
 
 
-@app.route('/block')
-def block():
+@app.route('/block/<string:contract>/')
+def block(contract):
     """
     查询当前节点信息
     """
-    urls = [NODE_URL]
+    if not contract or len(str(contract)) != 42:
+        info = {
+            "message": "failed",
+            "contract": contract
+        }
+    else:
+        urls = [NODE_URL]
 
-    token_info_key = "token_info"
-    result = rt.get(token_info_key)
-    info = json.loads(result)
+        token_info_key = "token_info"
+        result = rt.get(token_info_key)
+        info = json.loads(result)
 
-    data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
-    new_block_nums = []
-    for url in urls:
-        res = requests.post(url, json=data)
-        result = res.json()
-        new_block_nums.append(int(result.get("result", "0"), base=16))
+        data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
+        new_block_nums = []
+        for url in urls:
+            res = requests.post(url, json=data)
+            result = res.json()
+            new_block_nums.append(int(result.get("result", "0"), base=16))
 
-    info['new_block'] = max(new_block_nums)
-    info['server_time'] = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        info['new_block'] = max(new_block_nums)
+        info['server_time'] = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+        info['contract'] = contract
 
     return make_response(jsonify(info))
 
@@ -140,18 +147,26 @@ def mempool():
     return make_response(jsonify(mempool_result))
 
 
-@app.route('/history')
-def history():
+@app.route('/history/<string:contract>/')
+def history(contract):
     """
     历史记录
     """
-    history_key = "token_history"
-    history = rt.lrange(history_key, 0, 50)
-    his = [json.loads(i) for i in history]
-    result = {
-        "message": "success",
-        "data": his
-    }
+    if not contract or len(str(contract)) != 42:
+        result = {
+            "message": "failed",
+            "contract": contract,
+            "data": []
+        }
+    else:
+        history_key = "token_history"
+        history = rt.lrange(history_key, 0, 50)
+        his = [json.loads(i) for i in history]
+        result = {
+            "message": "success",
+            "contract": contract,
+            "data": his
+        }
     return make_response(jsonify(result))
 
 
@@ -190,5 +205,5 @@ def broadcast():
 if __name__ == "__main__":
     host = "127.0.0.1"
     port = 18788
-    debug = False
+    debug = True
     app.run(host=host, port=port, debug=debug)
