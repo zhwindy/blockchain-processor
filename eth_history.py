@@ -38,7 +38,7 @@ def sync_token_his_info():
         # 初始化已同步的高度
         synced_block_number = rt.get(sync_his_number_key)
         if not synced_block_number:
-            already_synced = int(new_block_num)
+            already_synced = int(new_block_num) - 10
         else:
             already_synced = int(synced_block_number)
 
