@@ -20,7 +20,7 @@ def syncing_newest_block_info():
 
         synced_block_number = rt.get(sync_node_number_key)
         if not synced_block_number:
-            already_synced = int(new_block_num)
+            already_synced = int(new_block_num) - 10
         else:
             already_synced = int(synced_block_number)
 
