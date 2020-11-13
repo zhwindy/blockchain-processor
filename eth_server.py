@@ -135,14 +135,14 @@ def pending(contract):
                     # if v_in and ("0xf6a4932f" in v_in) and (gasPrice > (gas_price - 5000000000)):
                     if not v_input:
                         continue
-                    v_to = tx.get("to", "").lower()
+                    v_to = tx.get("to", "")
                     if not v_to:
                         continue
                     if ("0xf6a4932f" not in v_input):
                         continue
                     if (gasPrice < gas_price):
                         continue
-                    if v_to == NEST_COCNTRACT:
+                    if str(v_to).lower() == NEST_COCNTRACT:
                         math.append(tx)
                     else:
                         if (token_contract.replace("0x", "") in v_input):
@@ -160,14 +160,14 @@ def pending(contract):
                     # if v_in and ("0xf6a4932f" in v_in) and (gasPrice > (gas_price - 5000000000)):
                     if not v_input:
                         continue
-                    v_to = tx.get("to", "").lower()
+                    v_to = tx.get("to", "")
                     if not v_to:
                         continue
                     if ("0xf6a4932f" not in v_input):
                         continue
                     if (gasPrice < gas_price):
                         continue
-                    if v_to == NEST_COCNTRACT:
+                    if str(v_to).lower() == NEST_COCNTRACT:
                         math.append(tx)
                     else:
                         if (token_contract.replace("0x", "") in v_input):
