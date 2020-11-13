@@ -52,7 +52,6 @@ def block(contract):
 
         info['new_block'] = max(new_block_nums)
         info['server_time'] = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-        info['contract'] = contract
 
     return make_response(jsonify(info))
 

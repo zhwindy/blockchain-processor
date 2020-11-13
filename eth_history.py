@@ -80,7 +80,6 @@ def sync_token_his_info():
                 v_to = tx.get("to", "").lower()
                 if not v_to:
                     continue
-
                 if ALL_ADDRESS:
                     if v_to == NEST_COCNTRACT:
                         tx['symbol'] = "NEST"
