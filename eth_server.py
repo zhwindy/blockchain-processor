@@ -14,6 +14,33 @@ NODE_URL = "http://127.0.0.1:18759"
 
 OUT_URL = "http://172.17.67.187:18759"
 
+# NEST报价合约地址
+NEST_COCNTRACT = "0xc83e009c7794e8f6d1954dc13c23a35fc4d039f6"
+# Token报价合约地址
+nTOKEN_COCNTRACT = "0x1542e790a742333ea6a2f171c5d07a2e7794eef4"
+
+TOKEN_CONTRACT = {
+    "HBTC": "0x0316eb71485b0ab14103307bf65a021042c6d380",
+    "HT": "0x6f259637dcd74c767781e37bc6133cd6a68aa161",
+    "WBTC": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "DAI": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "HUSD": "0xdf574c24545e5ffecb9a659c229253d4111d87e1",
+    "YFI": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+    "YFIII": "0x4be40bc9681D0A7C24A99b4c92F85B9053Fc2A45",
+    "UNI": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+}
+
+CONTRACT_TOKEN = {
+    "0x0316eb71485b0ab14103307bf65a021042c6d380": "HBTC",
+    "0x6f259637dcd74c767781e37bc6133cd6a68aa161": "HT",
+    "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": "WBTC",
+    "0x6b175474e89094c44da98b954eedeac495271d0f": "DAI",
+    "0xdf574c24545e5ffecb9a659c229253d4111d87e1": "HUSD",
+    "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e": "YFI",
+    "0x4be40bc9681D0A7C24A99b4c92F85B9053Fc2A45": "YFIII",
+    "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": "UNI",
+}
+
 
 @app.route('/')
 def main():
@@ -33,25 +60,34 @@ def block(contract):
     """
     if not contract or len(str(contract)) != 42:
         info = {
-            "message": "failed",
+            "message": "failed: invalid contract",
             "contract": contract
         }
     else:
         urls = [NODE_URL]
 
-        token_info_key = "token_info"
-        result = rt.get(token_info_key)
-        info = json.loads(result)
+        token_contract = str(contract).lower()
+        token_symbol = CONTRACT_TOKEN[token_contract]
+        if not token_symbol:
+            info = {
+                "message": "failed: not support contract",
+                "contract": token_contract
+            }
+        else:
+            token_info_key = str(token_symbol).lower() + "_" + token_contract + "_token"
 
-        data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
-        new_block_nums = []
-        for url in urls:
-            res = requests.post(url, json=data)
-            result = res.json()
-            new_block_nums.append(int(result.get("result", "0"), base=16))
+            result = rt.get(token_info_key)
+            info = json.loads(result)
 
-        info['new_block'] = max(new_block_nums)
-        info['server_time'] = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+            data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
+            new_block_nums = []
+            for url in urls:
+                res = requests.post(url, json=data)
+                result = res.json()
+                new_block_nums.append(int(result.get("result", "0"), base=16))
+
+            info['new_block'] = max(new_block_nums)
+            info['server_time'] = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
     return make_response(jsonify(info))
 
@@ -158,14 +194,22 @@ def history(contract):
             "data": []
         }
     else:
-        history_key = "token_history"
-        history = rt.lrange(history_key, 0, 50)
-        his = [json.loads(i) for i in history]
-        result = {
-            "message": "success",
-            "contract": contract,
-            "data": his
-        }
+        token_contract = str(contract).lower()
+        token_symbol = CONTRACT_TOKEN[token_contract]
+        if not token_symbol:
+            result = {
+                "message": "failed: not support contract",
+                "contract": token_contract
+            }
+        else:
+            token_history_key = str(token_symbol).lower() + "_" + str(token_contract).lower() + "_his"
+            history = rt.lrange(token_history_key, 0, 50)
+            his = [json.loads(i) for i in history]
+            result = {
+                "message": "success",
+                "contract": contract,
+                "data": his
+            }
     return make_response(jsonify(result))
 
 
