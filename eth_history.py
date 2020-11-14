@@ -98,6 +98,7 @@ def sync_token_his_info():
                         history.append(tx)
 
             for his in history:
+                tmp = {}
                 symbol = his.get("symbol")
                 contract = his.get("contract")
                 if not symbol or not contract:
@@ -112,15 +113,22 @@ def sync_token_his_info():
                 tx_detail = result.get("result")
                 status = tx_detail.get("status")
                 if status and status == "0x1":
-                    his['isError'] = "0"
+                    tmp['is_error'] = "0"
                 else:
-                    his['isError'] = "1"
-                his['blockNumber'] = str(int(his.get("blockNumber", "0"), base=16))
-                his['gas'] = str(int(his.get("gas", "0"), base=16))
-                his['gasPrice'] = str(int(his.get("gasPrice", "0"), base=16))
-                his['nonce'] = str(int(his.get("nonce", "0"), base=16))
+                    tmp['is_error'] = "1"
+                tmp['txid'] = his['hash']
+                tmp['contract'] = his['contract']
+                tmp['symbol'] = his['symbol']
+                tmp['from'] = his['from']
+                tmp['to'] = his['to']
+                tmp['value'] = his['value']
+                tmp['block_number'] = str(int(his.get("blockNumber", "0"), base=16))
+                tmp['gas'] = str(int(his.get("gas", "0"), base=16))
+                tmp['gas_price'] = str(int(his.get("gasPrice", "0"), base=16))
+                tmp['nonce'] = str(int(his.get("nonce", "0"), base=16))
+
                 token_history_key = str(symbol).lower() + "_" + str(contract).lower() + "_his"
-                rt.lpush(token_history_key, json.dumps(his))
+                rt.lpush(token_history_key, json.dumps(tmp))
                 # 每个token只保留1000条历史记录
                 rt.ltrim(token_history_key, 0, 1000)
             rt.set(sync_his_number_key, num)

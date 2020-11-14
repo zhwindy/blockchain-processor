@@ -62,7 +62,7 @@ def block(contract):
     """
     if not contract or len(str(contract)) != 42:
         info = {
-            "message": "failed: invalid contract",
+            "message": "invalid contract address",
             "contract": contract
         }
     else:
@@ -72,7 +72,7 @@ def block(contract):
         token_symbol = CONTRACT_TOKEN.get(token_contract)
         if not token_symbol:
             info = {
-                "message": "failed: not support contract",
+                "message": "not support contract",
                 "contract": token_contract
             }
         else:
@@ -88,7 +88,7 @@ def block(contract):
                 result = res.json()
                 new_block_nums.append(int(result.get("result", "0"), base=16))
 
-            info['new_block'] = max(new_block_nums)
+            info['new_block_height'] = max(new_block_nums)
             info['server_time'] = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
     return make_response(jsonify(info))
@@ -101,7 +101,7 @@ def pending(contract):
     """
     if not contract or len(str(contract)) != 42:
         pending_result = {
-            "message": "failed: invalid contract",
+            "message": "invalid contract address",
             "contract": contract
         }
     else:
@@ -109,7 +109,7 @@ def pending(contract):
         token_symbol = CONTRACT_TOKEN.get(token_contract)
         if not token_symbol:
             pending_result = {
-                "message": "failed: not support contract",
+                "message": "not support contract",
                 "contract": token_contract
             }
         else:
@@ -180,9 +180,9 @@ def pending(contract):
             gasPrice = int(ss.get("gasPrice", "0"), base=16)
 
             pending_result = {
-                "count": len(math),
-                "txgasPrice": gasPrice,
-                "bestgasPrice": gas_price,
+                "mempool_count": len(math),
+                "tx_gas_price": gasPrice,
+                "best_gas_price": gas_price,
                 "token_symbol": token_symbol,
                 "token_contract": token_contract
             }
@@ -231,7 +231,7 @@ def history(contract):
     """
     if not contract or len(str(contract)) != 42:
         result = {
-            "message": "failed",
+            "message": "invalid contract address",
             "contract": contract,
             "data": []
         }
@@ -240,7 +240,7 @@ def history(contract):
         token_symbol = CONTRACT_TOKEN.get(token_contract)
         if not token_symbol:
             result = {
-                "message": "failed: not support contract",
+                "message": "not support contract",
                 "contract": token_contract
             }
         else:
