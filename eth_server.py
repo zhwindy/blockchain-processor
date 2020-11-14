@@ -28,6 +28,7 @@ TOKEN_CONTRACT = {
     "YFI": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
     "YFIII": "0x4be40bc9681D0A7C24A99b4c92F85B9053Fc2A45",
     "UNI": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+    "NEST": "0xc83e009c7794e8f6d1954dc13c23a35fc4d039f6",
 }
 
 CONTRACT_TOKEN = {
@@ -39,6 +40,7 @@ CONTRACT_TOKEN = {
     "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e": "YFI",
     "0x4be40bc9681D0A7C24A99b4c92F85B9053Fc2A45": "YFIII",
     "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": "UNI",
+    "0xc83e009c7794e8f6d1954dc13c23a35fc4d039f6": "NEST",
 }
 
 
@@ -67,7 +69,7 @@ def block(contract):
         urls = [NODE_URL]
 
         token_contract = str(contract).lower()
-        token_symbol = CONTRACT_TOKEN[token_contract]
+        token_symbol = CONTRACT_TOKEN.get(token_contract)
         if not token_symbol:
             info = {
                 "message": "failed: not support contract",
@@ -104,7 +106,7 @@ def pending(contract):
         }
     else:
         token_contract = str(contract).lower()
-        token_symbol = CONTRACT_TOKEN[token_contract]
+        token_symbol = CONTRACT_TOKEN.get(token_contract)
         if not token_symbol:
             pending_result = {
                 "message": "failed: not support contract",
@@ -235,7 +237,7 @@ def history(contract):
         }
     else:
         token_contract = str(contract).lower()
-        token_symbol = CONTRACT_TOKEN[token_contract]
+        token_symbol = CONTRACT_TOKEN.get(token_contract)
         if not token_symbol:
             result = {
                 "message": "failed: not support contract",
