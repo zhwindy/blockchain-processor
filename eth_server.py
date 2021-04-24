@@ -268,21 +268,14 @@ def uni_history(contract):
         }
     else:
         token_contract = str(contract).lower()
-        token_symbol = CONTRACT_TOKEN.get(token_contract)
-        if not token_symbol:
-            result = {
-                "message": "not support contract",
-                "contract": token_contract
-            }
-        else:
-            token_history_key =  "uni_v2_" + token_contract + "_his"
-            history = rt.lrange(token_history_key, 0, 100)
-            his = [json.loads(i) for i in history]
-            result = {
-                "message": "success",
-                "contract": token_contract,
-                "data": his
-            }
+        token_history_key =  "uni_v2_" + token_contract + "_his"
+        history = rt.lrange(token_history_key, 0, 100)
+        his = [json.loads(i) for i in history]
+        result = {
+            "message": "success",
+            "contract": token_contract,
+            "data": his
+        }
     return make_response(jsonify(result))
 
 
