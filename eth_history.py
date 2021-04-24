@@ -179,9 +179,26 @@ def sync_uni_v2_his_info():
                 v_to_str = v_to.lower()
                 if v_to_str != UNI_CONTRACT:
                     continue
+
+                txid = tx.get("hash")
+                if not txid:
+                    continue
+
+                data = {"jsonrpc": "2.0", "method": "eth_getTransactionReceipt", "params": [txid], "id": 1}
+                res = requests.post(NODE_URL, json=data)
+                result = res.json()
+                tx_receipt = result.get("result")
+                status = tx_receipt.get("status")
+                gasUsed = tx_receipt.get("gasUsed")
+                logs = tx_receipt.get("logs")
+
+                tx['status'] = status
+                tx['gasUsed'] = gasUsed
+                tx['logs'] = logs
+
                 rt.lpush(token_history_key, json.dumps(tx))
                 # 保留1000条uni历史记录
-                rt.ltrim(token_history_key, 0, 1000)
+                rt.ltrim(token_history_key, 0, 200)
                 rt.set(sync_his_number_key, num)
 
         time.sleep(10)
