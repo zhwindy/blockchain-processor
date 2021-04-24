@@ -37,13 +37,15 @@ CONTRACT_TOKEN = {
 ALL_ADDRESS = True
 MY_ADDRESS_LIST = ["0x9c9800ea23ea152b57dc9f2d2e0d85b2fc027c44"]
 
+UNI_CONTRACT = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d"
+
 
 def sync_token_his_info():
     """
     同步历史记录
     """
     sync_his_number_key = "his_already_synced_number"
-    rt = redis.Redis(host='127.0.0.1', port=6379)
+    rt = redis.Redis(host='127.0.0.1', port=6379, password="redis-123456")
 
     while True:
         data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
@@ -136,6 +138,55 @@ def sync_token_his_info():
         time.sleep(30)
 
 
+def sync_uni_v2_his_info():
+    """
+    同步uni合约历史记录
+    """
+    sync_his_number_key = "his_already_synced_number"
+    token_history_key =  "uni_v2_" + UNI_CONTRACT + "_his"
+
+    rt = redis.Redis(host='127.0.0.1', port=6379, password="redis-123456")
+
+    while True:
+        data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
+        res = requests.post(NODE_URL, json=data)
+        result = res.json()
+        # 查询当前最新高度
+        new_block_num = int(result.get("result", "0"), base=16)
+        # 初始化已同步的高度
+        synced_block_number = rt.get(sync_his_number_key)
+        if not synced_block_number:
+            already_synced = int(new_block_num) - 10
+        else:
+            already_synced = int(synced_block_number)
+
+        for num in range(already_synced + 1, new_block_num):
+            block_num = hex(int(num))
+            data = {"jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": [block_num, True], "id": 1}
+            res = requests.post(NODE_URL, json=data)
+            result = res.json()
+            datas = result.get("result")
+            transactions = datas.get("transactions", [])
+            if not transactions:
+                continue
+            for tx in transactions:
+                v_from = tx.get("from", "")
+                if not v_from:
+                    continue
+                v_to = tx.get("to", "")
+                if not v_to:
+                    continue
+                v_to_str = v_to.lower()
+                if v_to_str != UNI_CONTRACT:
+                    continue
+                rt.lpush(token_history_key, json.dumps(tx))
+                # 保留1000条uni历史记录
+                rt.ltrim(token_history_key, 0, 1000)
+                rt.set(sync_his_number_key, num)
+
+        time.sleep(10)
+
+
 def del_0x(contract):
     """
     去掉合约地址开头的0x标志
@@ -144,4 +195,4 @@ def del_0x(contract):
 
 
 if __name__ == "__main__":
-    sync_token_his_info()
+    sync_uni_v2_his_info()
