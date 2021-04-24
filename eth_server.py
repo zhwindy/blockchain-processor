@@ -8,7 +8,7 @@ from flask import Flask, request, make_response, jsonify
 
 app = Flask(__name__)
 
-rt = redis.Redis(host='127.0.0.1', port=6379)
+rt = redis.Redis(host='127.0.0.1', port=6379, password="redis-123456")
 
 NODE_URL = "http://127.0.0.1:18759"
 
@@ -253,6 +253,39 @@ def history(contract):
                 "data": his
             }
     return make_response(jsonify(result))
+
+
+@app.route('/api/v2/history/<string:contract>/')
+def history(contract):
+    """
+    历史记录
+    """
+    if not contract or len(str(contract)) != 42:
+        result = {
+            "message": "invalid contract address",
+            "contract": contract,
+            "data": []
+        }
+    else:
+        token_contract = str(contract).lower()
+        token_symbol = CONTRACT_TOKEN.get(token_contract)
+        if not token_symbol:
+            result = {
+                "message": "not support contract",
+                "contract": token_contract
+            }
+        else:
+            token_history_key =  "uni_v2_" + token_contract + "_his"
+            history = rt.lrange(token_history_key, 0, 100)
+            his = [json.loads(i) for i in history]
+            result = {
+                "message": "success",
+                "contract": token_contract,
+                "data": his
+            }
+    return make_response(jsonify(result))
+
+
 
 
 @app.route('/broadcast', methods=['POST'])
