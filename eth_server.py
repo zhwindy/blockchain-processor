@@ -263,16 +263,19 @@ def uni_history(contract):
     if not contract or len(str(contract)) != 42:
         result = {
             "message": "invalid contract address",
+            "count": 0,
             "contract": contract,
             "data": []
         }
     else:
+        count = 50
         token_contract = str(contract).lower()
         token_history_key =  "uni_v2_" + token_contract + "_his"
-        history = rt.lrange(token_history_key, 0, 100)
+        history = rt.lrange(token_history_key, 0, count)
         his = [json.loads(i) for i in history]
         result = {
             "message": "success",
+            "count": count,
             "contract": token_contract,
             "data": his
         }
