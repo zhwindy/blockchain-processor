@@ -256,7 +256,7 @@ def history(contract):
 
 
 @app.route('/api/v2/history/<string:contract>/')
-def history(contract):
+def uni_history(contract):
     """
     历史记录
     """
