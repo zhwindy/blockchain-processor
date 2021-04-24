@@ -282,8 +282,6 @@ def uni_history(contract):
     return make_response(jsonify(result))
 
 
-
-
 @app.route('/broadcast', methods=['POST'])
 def broadcast():
     """

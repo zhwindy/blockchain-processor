@@ -153,6 +153,8 @@ def sync_uni_v2_his_info():
         result = res.json()
         # 查询当前最新高度
         new_block_num = int(result.get("result", "0"), base=16)
+        # 延迟2个区块解析数据,防止分叉情况
+        new_block_num = new_block_num - 2
         # 初始化已同步的高度
         synced_block_number = rt.get(sync_his_number_key)
         if not synced_block_number:
