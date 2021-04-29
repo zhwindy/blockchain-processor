@@ -282,6 +282,30 @@ def uni_history(contract):
     return make_response(jsonify(result))
 
 
+@app.route('/api/v2/sync/status')
+def sync_status():
+    """
+    同步情况
+    """
+    # 已同步的高度
+    uni_sync_his_number_key = "uni_his_already_synced_number"
+    # 已同步得交易数量
+    uni_already_synced_tx_count_key = "uni_already_synced_tx_count"
+
+    server_time = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+
+    uni_sync_block = rt.get(uni_sync_his_number_key)
+    uni_sync_tx_count = rt.get(uni_already_synced_tx_count_key)
+
+    result = {
+        "message": "success",
+        "uni_sync_tx_count": uni_sync_tx_count,
+        "uni_sync_block": uni_sync_block,
+        "server_time": server_time
+    }
+    return make_response(jsonify(result))
+
+
 @app.route('/broadcast', methods=['POST'])
 def broadcast():
     """

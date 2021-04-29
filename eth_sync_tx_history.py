@@ -98,6 +98,7 @@ def sync_uni_v2_his_info():
         else:
             already_synced = int(synced_block_number)
 
+        interval = max(1, interval)
         end_block = min(already_synced+interval, new_block_num)
 
         txs = []
@@ -146,14 +147,12 @@ def sync_uni_v2_his_info():
             continue
         txs_count = len(txs)
         if txs_count < 100:
-            interval += 5
+            interval += 1
         else:
-            interval -= 2
+            interval -= 1
         logger.info(f"get tx count:{txs_count}")
-        values = ",".join(["('{token_name}', {block_height}, '{block_hash}', '{tx_hash}')".format(**one) for one in txs])
         try:
-            # with connection:
-            #     with connection.cursor() as cursor:
+            values = ",".join(["('{token_name}', {block_height}, '{block_hash}', '{tx_hash}')".format(**one) for one in txs])
             cursor = connection.cursor()
             sql = f"""
                INSERT IGNORE INTO {table}(`token_name`, `block_height`, `block_hash`, `tx_hash`) values {values};
