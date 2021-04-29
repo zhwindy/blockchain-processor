@@ -79,6 +79,9 @@ def sync_uni_v2_his_info():
     config = CONFIG['mysql']
     connection = pymysql.connect(**config)
 
+    # 每次请求的块数,动态调整
+    interval = 5
+
     while True:
         data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
         res = requests.post(node, json=data)
@@ -95,7 +98,7 @@ def sync_uni_v2_his_info():
         else:
             already_synced = int(synced_block_number)
 
-        end_block = min(already_synced+5, new_block_num)
+        end_block = min(already_synced+interval, new_block_num)
 
         txs = []
         syncing_block = already_synced
@@ -136,11 +139,16 @@ def sync_uni_v2_his_info():
             except Exception as e:
                 logger.info(e)
                 break
-        logger.info(f"syncing block:{syncing_block}")
+        logger.info(f"interval:{interval}, syncing block:{syncing_block}")
         if not txs:
+            interval += 5
             redis_conn.set(uni_sync_his_number_key, syncing_block)
             continue
         txs_count = len(txs)
+        if txs_count < 100:
+            interval += 5
+        else:
+            interval -= 2
         logger.info(f"get tx count:{txs_count}")
         values = ",".join(["('{token_name}', {block_height}, '{block_hash}', '{tx_hash}')".format(**one) for one in txs])
         try:
