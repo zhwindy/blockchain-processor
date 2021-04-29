@@ -101,7 +101,7 @@ def sync_uni_v2_his_info():
         syncing_block = already_synced
         for num in range(already_synced + 1, end_block):
             block_num = hex(int(num))
-            logger.info("process block:{}".format(num))
+            # logger.info("process block:{}".format(num))
             try:
                 data = {"jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": [block_num, True], "id": 1}
                 res = requests.post(node, json=data)
@@ -136,8 +136,8 @@ def sync_uni_v2_his_info():
             except Exception as e:
                 logger.info(e)
                 break
+        logger.info(f"syncing block:{syncing_block}")
         if not txs:
-            logger.info(f"syncing block:{syncing_block}")
             redis_conn.set(uni_sync_his_number_key, syncing_block)
             continue
         txs_count = len(txs)
@@ -159,7 +159,7 @@ def sync_uni_v2_his_info():
         redis_conn.set(uni_sync_his_number_key, syncing_block)
         redis_conn.incrby(uni_already_synced_tx_count_key, txs_count)
 
-        time.sleep(1)
+        time.sleep(0.2)
 
 
 if __name__ == "__main__":
