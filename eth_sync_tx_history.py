@@ -144,13 +144,14 @@ def sync_uni_v2_his_info():
         logger.info(f"get tx count:{txs_count}")
         values = ",".join(["('{token_name}', {block_height}, '{block_hash}', '{tx_hash}')".format(**one) for one in txs])
         try:
-            with connection:
-                with connection.cursor() as cursor:
-                    sql = f"""
-                       INSERT IGNORE INTO {table}(`token_name`, `block_height`, `block_hash`, `tx_hash`) values {values};
-                    """
-                    cursor.execute(sql)
-                connection.commit()
+            # with connection:
+            #     with connection.cursor() as cursor:
+            cursor = connection.cursor()
+            sql = f"""
+               INSERT IGNORE INTO {table}(`token_name`, `block_height`, `block_hash`, `tx_hash`) values {values};
+            """
+            cursor.execute(sql)
+            connection.commit()
         except Exception as e:
             logger.info(f"syncing block:{syncing_block}")
             logger.info(e)
