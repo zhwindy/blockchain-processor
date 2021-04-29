@@ -294,8 +294,8 @@ def sync_status():
 
     server_time = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
-    uni_sync_block = rt.get(uni_sync_his_number_key)
-    uni_sync_tx_count = rt.get(uni_already_synced_tx_count_key)
+    uni_sync_block = json.loads(rt.get(uni_sync_his_number_key))
+    uni_sync_tx_count = json.loads(rt.get(uni_already_synced_tx_count_key))
 
     result = {
         "message": "success",
