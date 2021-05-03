@@ -36,7 +36,7 @@ def uni_latest_history(contract):
     else:
         token_contract = str(contract).lower()
         token_history_key =  "uni_v2_" + token_contract + "_his"
-        history = redis_client.lrange(token_history_key, 0, count)
+        history = redis_client.lrange(token_history_key, 0, 50)
         his = [json.loads(i) for i in history]
         result = {
             "message": "success",
