@@ -314,9 +314,7 @@ def broadcast():
     urls = [
         "http://127.0.0.1:18759",
         "https://web3.mytokenpocket.vip",
-        # "http://10.66.178.171:18759",
         "https://mainnet.infura.io/v3/dd70b311da9a4147b5974c8698dec90b",
-        # "http://172.17.67.187:18759",
         "https://ethje115qd1174d.swtc.top",
         "https://main-rpc.linkpool.io",
         "https://eth626892d.jccdex.cn",
@@ -340,6 +338,6 @@ def broadcast():
 
 if __name__ == "__main__":
     host = "127.0.0.1"
-    port = 18788
+    port = 18760
     debug = False
     app.run(host=host, port=port, debug=debug)
