@@ -58,7 +58,7 @@ def get_uni_all_history(contract, page, limit=20, pageSize=20):
         if not contract or len(str(contract)) != 42:
             result = {
                 "message": "invalid contract address",
-                "total": 0,
+                "totalCount": 0,
                 "page": page,
                 "pageSize": pageSize,
                 "contract": contract,
@@ -66,7 +66,8 @@ def get_uni_all_history(contract, page, limit=20, pageSize=20):
             }
         else:
             uni_sync_tx_count = json.loads(redis_client.get(uni_already_synced_tx_count_key))
-            total = uni_sync_tx_count // pageSize
+            # total = uni_sync_tx_count // pageSize
+            total = uni_sync_tx_count
             sql = f"""
                 SELECT
                     block_height, block_hash, tx_hash
@@ -100,7 +101,7 @@ def get_uni_all_history(contract, page, limit=20, pageSize=20):
                 data.append(tmp)
             result = {
                 "message": "success",
-                "total": total,
+                "totalCount": total,
                 "page": page,
                 "pageSize": pageSize,
                 "contract": contract,
@@ -109,7 +110,7 @@ def get_uni_all_history(contract, page, limit=20, pageSize=20):
     except Exception as e:
         result = {
             "message": "Error: " + str(e),
-            "total": 0,
+            "totalCount": 0,
             "page": 0,
             "pageSize": pageSize,
             "contract": contract,
