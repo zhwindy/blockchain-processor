@@ -3,7 +3,7 @@
 import json
 import requests
 import time
-from config.env import ENV, CONFIG
+from config.env import CONFIG
 from service import redis_client, get_uni_all_history
 from flask import Flask, request, make_response, jsonify
 
@@ -87,5 +87,5 @@ def sync_status():
 if __name__ == "__main__":
     host = "127.0.0.1"
     port = 18788
-    debug = False if ENV == "LOCAL" else True
+    debug = CONFIG['debug']
     app.run(host=host, port=port, debug=debug)

@@ -4,13 +4,11 @@ import pymysql
 import requests
 import json
 from functools import lru_cache
-from config.env import ENV, CONFIG
+from config.env import CONFIG
+from db import mysqldb
 
 redis_config = CONFIG['redis']
 redis_client = redis.Redis(**redis_config)
-
-config = CONFIG['mysql']
-connection = pymysql.connect(**config)
 
 node_url = CONFIG['node']
 
@@ -45,8 +43,8 @@ def demo_get_transaction_receipt(txid):
     result = res.json()
     return result.get("result", {})
 
-@lru_cache(maxsize=64)
-def get_uni_all_history(contract, page, limit=20, pageSize=20):
+@lru_cache(maxsize=32)
+def get_uni_all_history(contract, page, limit=15, pageSize=15):
     """
     查询历史记录
     """
@@ -66,7 +64,6 @@ def get_uni_all_history(contract, page, limit=20, pageSize=20):
             }
         else:
             uni_sync_tx_count = json.loads(redis_client.get(uni_already_synced_tx_count_key))
-            # total = uni_sync_tx_count // pageSize
             total = uni_sync_tx_count
             sql = f"""
                 SELECT
@@ -77,10 +74,8 @@ def get_uni_all_history(contract, page, limit=20, pageSize=20):
                     id > {offset} limit {limit}
             """
             txids = []
-            with connection.cursor() as cursor:
-                cursor.execute(sql)
-                datas = cursor.fetchall()
-                txids = [data[2] for data in datas]
+            datas = mysqldb.query(sql)
+            txids = [data.get("tx_hash") for data in datas]
             tx_details = demo_get_many_transactions(txids)
             data = []
             for tx in tx_details:
