@@ -29,7 +29,7 @@ def demo_get_many_transactions(txids):
     result = res.json()
     return result
 
-def demo_get_many_transactions(txids):
+def demo_get_many_receipts(txids):
     """
     批量查询交易收据
     """
