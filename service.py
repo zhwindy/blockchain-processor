@@ -166,7 +166,7 @@ def get_uni_all_history(contract, page, limit=10, pageSize=10):
             txids = [data.get("tx_hash") for data in datas]
             tx_details = demo_get_many_transactions(txids)
             tx_receipts = demo_get_many_receipts(txids)
-            data = []
+            result_list = []
             for index, tx in enumerate(tx_details):
                 data = datas[index]
                 timestamp = data.get("timestamp")
@@ -191,14 +191,14 @@ def get_uni_all_history(contract, page, limit=10, pageSize=10):
                 tmp['gasUsed'] = gasUsed
                 tmp['logs'] = logs
                 tmp['timestamp'] = timestamp
-                data.append(tmp)
+                result_list.append(tmp)
             result = {
                 "message": "success",
                 "totalCount": total,
                 "page": page,
                 "pageSize": pageSize,
                 "contract": contract,
-                "data": data
+                "data": result_list
             }
     except Exception as e:
         result = {
