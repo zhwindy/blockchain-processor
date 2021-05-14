@@ -94,7 +94,6 @@ def sync_uni_v2_his_info():
                         continue
 
                     txid = tx.get("hash")
-                    time = tx.get("")
                     if not txid:
                         continue
                     tmp = {
