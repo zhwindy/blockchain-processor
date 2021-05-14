@@ -59,8 +59,12 @@ def sync_uni_v2_his_info():
         interval = max(1, interval)
         end_block = min(already_synced+interval, new_block_num)
 
-        txs = []
         syncing_block = already_synced
+        # 若已追到最新区块则等会儿
+        if (already_synced+1) >= end_block:
+            time.sleep(3)
+            continue
+        txs = []
         for num in range(already_synced + 1, end_block):
             block_num = hex(int(num))
             # logger.info("process block:{}".format(num))
