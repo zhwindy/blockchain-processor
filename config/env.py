@@ -39,7 +39,7 @@ elif ENV == "TEST":
             "passwd": "eth123456",
             "db": "eth"
         },
-        "table": "tx_history_test",
+        "table": "tx_history",
         "node": "http://101.201.126.224:18759"
     }
 else:
@@ -57,6 +57,6 @@ else:
             "passwd": "eth123456",
             "db": "eth"
         },
-        "table": "tx_history",
+        "table": "history",
         "node": "http://127.0.0.1:18759"
     }

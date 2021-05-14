@@ -155,7 +155,7 @@ def get_uni_all_history(contract, page, limit=10, pageSize=10):
             total = uni_sync_tx_count
             sql = f"""
                 SELECT
-                    block_height, block_hash, tx_hash
+                    block_height, block_hash, tx_hash, timestamp
                 FROM
                     {table}
                 where
@@ -168,6 +168,8 @@ def get_uni_all_history(contract, page, limit=10, pageSize=10):
             tx_receipts = demo_get_many_receipts(txids)
             data = []
             for index, tx in enumerate(tx_details):
+                data = datas[index]
+                timestamp = data.get("timestamp")
                 tmp = tx.get("result", {})
                 txid = tmp.get("hash")
                 if not txid:
@@ -188,6 +190,7 @@ def get_uni_all_history(contract, page, limit=10, pageSize=10):
                 tmp['status'] = status
                 tmp['gasUsed'] = gasUsed
                 tmp['logs'] = logs
+                tmp['timestamp'] = timestamp
                 data.append(tmp)
             result = {
                 "message": "success",

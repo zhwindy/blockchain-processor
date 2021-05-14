@@ -74,6 +74,11 @@ def sync_uni_v2_his_info():
                 result = res.json()
                 datas = result.get("result")
                 block_hash = datas.get("hash")
+                timestamp = datas.get("timestamp")
+                if timestamp:
+                    time = int(str(timestamp), base=16)
+                else:
+                    time = 123456
                 transactions = datas.get("transactions", [])
                 if not transactions:
                     continue
@@ -89,13 +94,15 @@ def sync_uni_v2_his_info():
                         continue
 
                     txid = tx.get("hash")
+                    time = tx.get("")
                     if not txid:
                         continue
                     tmp = {
                         "token_name": "uni",
                         "block_height": num,
                         "block_hash": block_hash,
-                        "tx_hash": txid
+                        "tx_hash": txid,
+                        "timestamp": time,
                     }
                     txs.append(tmp)
                 syncing_block = num
@@ -114,10 +121,10 @@ def sync_uni_v2_his_info():
             interval -= 1
         logger.info(f"get tx count:{txs_count}")
         try:
-            values = ",".join(["('{token_name}', {block_height}, '{block_hash}', '{tx_hash}')".format(**one) for one in txs])
+            values = ",".join(["('{token_name}', {block_height}, '{block_hash}', '{tx_hash}', '{timestamp}')".format(**one) for one in txs])
             cursor = connection.cursor()
             sql = f"""
-               INSERT IGNORE INTO {table}(`token_name`, `block_height`, `block_hash`, `tx_hash`) values {values};
+               INSERT IGNORE INTO {table}(`token_name`, `block_height`, `block_hash`, `tx_hash`, `timestamp`) values {values};
             """
             cursor.execute(sql)
             connection.commit()
