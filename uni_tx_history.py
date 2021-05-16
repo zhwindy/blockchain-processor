@@ -56,6 +56,7 @@ def sync_uni_v2_his_info():
         else:
             already_synced = int(synced_block_number)
 
+        # 2021-05-16发现问题: interval至少从2开始,若interval=1则可能出现end_block=start_block相导致无限等待的情况
         interval = max(2, interval)
         start_block = already_synced + 1
         end_block = min(already_synced+interval, new_block_num)
