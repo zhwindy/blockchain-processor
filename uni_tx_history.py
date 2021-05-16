@@ -56,7 +56,7 @@ def sync_uni_v2_his_info():
         else:
             already_synced = int(synced_block_number)
 
-        interval = max(1, interval)
+        interval = max(2, interval)
         start_block = already_synced + 1
         end_block = min(already_synced+interval, new_block_num)
         # 若已追到最新区块则等会儿
