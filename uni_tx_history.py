@@ -57,17 +57,16 @@ def sync_uni_v2_his_info():
             already_synced = int(synced_block_number)
 
         interval = max(1, interval)
+        start_block = already_synced + 1
         end_block = min(already_synced+interval, new_block_num)
-
-        syncing_block = already_synced
         # 若已追到最新区块则等会儿
-        if (already_synced+1) >= end_block:
+        if start_block >= end_block:
+            logger.info(f"[waiting]: interval:{interval}, start_block:{start_block}, end_block:{end_block}")
             time.sleep(3)
             continue
         txs = []
-        for num in range(already_synced + 1, end_block):
+        for num in range(start_block, end_block):
             block_num = hex(int(num))
-            # logger.info("process block:{}".format(num))
             try:
                 data = {"jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": [block_num, True], "id": 1}
                 res = requests.post(node, json=data)
@@ -104,21 +103,22 @@ def sync_uni_v2_his_info():
                         "timestamp": tx_time,
                     }
                     txs.append(tmp)
-                syncing_block = num
+                already_synced = num
             except Exception as e:
                 logger.info(e)
                 break
-        logger.info(f"interval:{interval}, syncing block:{syncing_block}")
+        logger.info(f"interval:{interval}, start_block:{start_block}, end_block:{end_block}")
         if not txs:
             interval += 5
-            redis_conn.set(uni_sync_his_number_key, syncing_block)
+            redis_conn.set(uni_sync_his_number_key, already_synced)
             continue
         txs_count = len(txs)
         if txs_count < 100:
             interval += 1
         else:
             interval -= 1
-        logger.info(f"get tx count:{txs_count}")
+        sync_block_count = end_block - start_block
+        logger.info(f"start:{start_block}, end:{end_block}, block_count:{sync_block_count}, get tx_count:{txs_count}")
         try:
             values = ",".join(["('{token_name}', {block_height}, '{block_hash}', '{tx_hash}', '{timestamp}')".format(**one) for one in txs])
             cursor = connection.cursor()
@@ -128,10 +128,10 @@ def sync_uni_v2_his_info():
             cursor.execute(sql)
             connection.commit()
         except Exception as e:
-            logger.info(f"syncing block:{syncing_block}")
+            logger.info(f"syncing block:{already_synced}")
             logger.info(e)
             continue
-        redis_conn.set(uni_sync_his_number_key, syncing_block)
+        redis_conn.set(uni_sync_his_number_key, already_synced)
         redis_conn.incrby(uni_already_synced_tx_count_key, txs_count)
 
         time.sleep(0.2)
