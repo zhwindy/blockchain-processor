@@ -63,6 +63,7 @@ def sync_uni_v2_his_info():
         # 若已追到最新区块则等会儿
         if start_block >= end_block:
             logger.info(f"[waiting]: interval:{interval}, start_block:{start_block}, end_block:{end_block}")
+            interval = 1
             time.sleep(3)
             continue
         txs = []
