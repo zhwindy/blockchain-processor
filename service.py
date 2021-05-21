@@ -57,7 +57,6 @@ def demo_get_transaction_receipt(txid):
     result = res.json()
     return result.get("result", {})
 
-@lru_cache(maxsize=32)
 def get_uni_all_history_v1(contract, page, limit=15, pageSize=15):
     """
     查询历史记录:
@@ -129,7 +128,6 @@ def get_uni_all_history_v1(contract, page, limit=15, pageSize=15):
         }
     return result
 
-@lru_cache(maxsize=32)
 def get_uni_all_history(contract, page, limit=10, pageSize=10):
     """
     查询历史记录:
