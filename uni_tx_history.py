@@ -64,7 +64,7 @@ def sync_uni_v2_his_info():
         if start_block >= end_block:
             logger.info(f"[waiting]: interval:{interval}, start_block:{start_block}, end_block:{end_block}")
             interval = 1
-            time.sleep(3)
+            time.sleep(30)
             continue
         txs = []
         for num in range(start_block, end_block):
