@@ -59,5 +59,6 @@ else:
         },
         "table": "history",
         # "node": "http://127.0.0.1:18759"
-        "node": "http://39.106.0.199:18759"
+        # "node": "http://39.106.0.199:18759"
+        "node": "https://mainnet.infura.io/v3/ae11572b527444de8713205f186027ef"
     }
