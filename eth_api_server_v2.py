@@ -4,7 +4,7 @@ import json
 import requests
 import time
 from config.env import CONFIG
-from service import redis_client, get_uni_all_history
+from service import redis_client, get_uni_all_history, get_uni_all_history_v2
 from flask import Flask, request, make_response, jsonify
 
 app = Flask(__name__)
@@ -55,7 +55,8 @@ def uni_all_history():
     contract = request.args.get('contract')
     page = request.args.get('page', 1)
 
-    result = get_uni_all_history(contract, page)
+    # result = get_uni_all_history(contract, page)
+    result = get_uni_all_history_v2(contract, page)
 
     return make_response(jsonify(result))
 
