@@ -273,3 +273,58 @@ def get_uni_all_history_v2(contract, page, limit=10, pageSize=10):
             "data": []
         }
     return result
+
+def get_uni_all_history_test(contract, page, limit=10, pageSize=10):
+    """
+    查询历史记录:
+        1.单页默认10条
+        2.交易详情批量查询,交易收据单独循环查询
+    """
+    page = max(1, int(page))
+    offset = (page - 1) * limit
+    # 已同步得交易数量
+    uni_already_synced_tx_count_key = "uni_already_synced_tx_count"
+    try:
+        if not contract or len(str(contract)) != 42:
+            result = {
+                "message": "invalid contract address",
+                "totalCount": 0,
+                "page": page,
+                "pageSize": pageSize,
+                "contract": contract,
+                "data": []
+            }
+        else:
+            uni_sync_tx_count = json.loads(redis_client.get(uni_already_synced_tx_count_key))
+            total = uni_sync_tx_count
+            sql = f"""
+                SELECT
+                    block_height, block_hash, tx_hash, timestamp
+                FROM
+                    {table}
+                where
+                    id > {offset} limit {limit}
+            """
+            datas = mysqldb.query(sql)
+            for data in datas:
+                pass
+            content = redis_client.get("test_content")
+            result_list = json.loads(content) if content else []
+            result = {
+                "message": "success",
+                "totalCount": total,
+                "page": page,
+                "pageSize": pageSize,
+                "contract": contract,
+                "data": result_list
+            }
+    except Exception as e:
+        result = {
+            "message": "Error: " + str(e),
+            "totalCount": 0,
+            "page": 0,
+            "pageSize": pageSize,
+            "contract": contract,
+            "data": []
+        }
+    return result
