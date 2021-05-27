@@ -115,12 +115,14 @@ def nft_sync_server():
         tx_counts = len(tx_ids)
         logger.info(f"tx_receipts count: {tx_counts} cost_time: {diff}s")
         if not tx_receipts:
+            logger.info("no tx_receipts")
             continue
         full_detail_txs = []
         for index, tx in enumerate(txs):
             try:
                 tx_receipt_result = tx_receipts[index]
-            except Exception:
+            except Exception as e:
+                logger.info(e)
                 continue
             tx_receipt = tx_receipt_result.get("result", {})
             if tx_receipt:
