@@ -145,9 +145,15 @@ def nft_sync_server():
         sync_block_count = end_block - start_block
         logger.info(f"start:{start_block}, end:{end_block}, block_count:{sync_block_count}, get tx_count:{txs_count}")
         try:
+
+            start_time = time.time()
             db = client.nftscan
             collection = db.history
             collection.insert_many(full_detail_txs)
+            end_time = time.time()
+            diff = round(end_time - start_time, 2)
+            mongo_count = len(full_detail_txs)
+            logger.info(f"Mongo insert count: {mongo_count} cost_time: {diff}s")
         except Exception as e:
             logger.info(e)
             continue
