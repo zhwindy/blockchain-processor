@@ -144,7 +144,7 @@ def nft_sync_server():
         logger.info(f"start:{start_block}, end:{end_block}, block_count:{sync_block_count}, get tx_count:{txs_count}")
         try:
             db = client.nftscan
-            collection = db.history_raw
+            collection = db.history
             collection.insert_many(full_detail_txs)
         except Exception as e:
             logger.info(e)
