@@ -5,13 +5,15 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from noderpc import demo_get_block_number, demo_get_block_by_number, demo_get_transaction_receipt
 
 
+ENDPOINT = "https://bsc-mainnet.nodereal.io/v1/a4a9f892480d45e395f93945c4b77c6e"
+
+
 def main():
     last_process_number = None
     while True:
         block_number = demo_get_block_number()
         b1 = int(block_number, base=16)
         # print("get block_number:", b1)
-        # 首次赋值
         if not last_process_number:
             last_process_number = b1 
 
