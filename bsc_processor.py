@@ -1,6 +1,7 @@
 #encoding=utf-8
 import time
 import requests
+from logger import logging
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from noderpc import demo_get_block_number, demo_get_block_by_number, demo_get_transaction_receipt
 
@@ -11,24 +12,35 @@ ENDPOINT = "https://bsc-mainnet.nodereal.io/v1/a4a9f892480d45e395f93945c4b77c6e"
 def main():
     last_process_number = None
     while True:
-        block_number = demo_get_block_number()
-        b1 = int(block_number, base=16)
+        block_number = demo_get_block_number(node_url=ENDPOINT)
+        if not block_number:
+            time.sleep(2)
+            continue
+        new = int(block_number, base=16)
         # print("get block_number:", b1)
         if not last_process_number:
-            last_process_number = b1 
+            last_process_number = new
 
-        for number in range(last_process_number, b1):
-            print("process:", number)
-            result = demo_get_block_by_number(hex(number))
+        for number in range(last_process_number, new):
+            result = demo_get_block_by_number(hex(number), node_url=ENDPOINT)
+            if not result:
+                continue
             txs = result.get("transactions", []) if result else []
             txids = [tx.get("hash") for tx in txs]
+            count = len(txids)
+            logging.info(f"process block: {number}, txids: {txids}")
             with ProcessPoolExecutor(max_workers=10) as executor:
-                futures = [executor.submit(demo_get_transaction_receipt, txid) for txid in txids]
+                futures = [executor.submit(process_tx_receipt, txid) for txid in txids]
                 for future in as_completed(futures):
-                    continue
-                    # print(future.result())
-        last_process_number = b1
+                    break
+            last_process_number = number
+            logging.info(f"block {number} tx {count} process success")
         time.sleep(5)
+
+
+def process_tx_receipt(txid):
+    result = demo_get_transaction_receipt(txid, node_url=ENDPOINT)
+    # logging.info(result)
 
 
 if __name__ == "__main__":
