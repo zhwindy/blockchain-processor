@@ -29,7 +29,7 @@ def main():
             txids = [tx.get("hash") for tx in txs]
             count = len(txids)
             logging.info(f"process block: {number}, txids: {txids}")
-            with ProcessPoolExecutor(max_workers=10) as executor:
+            with ProcessPoolExecutor(max_workers=6) as executor:
                 futures = [executor.submit(process_tx_receipt, txid) for txid in txids]
                 for future in as_completed(futures):
                     break
