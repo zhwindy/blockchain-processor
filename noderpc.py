@@ -14,7 +14,7 @@ def demo_get_block_number(node_url=None):
         url = node_url if node_url else NODE_ENDPOINT
         data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
         # res = requests.post(url, json=data)
-        res = session.post(url, json=data)
+        res = session.post(url, json=data, verify=False)
         result = res.json()
     except Exception as e:
         logging.info(e)
@@ -30,7 +30,7 @@ def demo_get_block_by_number(block_number, node_url=None):
     data = {"jsonrpc": "2.0", "method": "eth_getBlockByNumber", "params": [block_number, True], "id": 1}
     try:
         # res = requests.post(url, json=data)
-        res = session.post(url, json=data)
+        res = session.post(url, json=data, verify=False)
         result = res.json()
     except Exception as e:
         logging.info(f"get block: {block_number} error: {e}")
@@ -51,7 +51,7 @@ def demo_get_transaction_receipt(txid, node_url=None):
     url = node_url if node_url else NODE_ENDPOINT
     try:
         # res = requests.post(url, json=data)
-        res = session.post(url, json=data)
+        res = session.post(url, json=data, verify=False)
         result = res.json()
     except Exception as e:
         logging.info(f"get tx: {txid} error: {e}")
