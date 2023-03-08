@@ -20,6 +20,8 @@ def main():
         # print("get block_number:", b1)
         if not last_process_number:
             last_process_number = new
+        
+        session = requests.Session()
 
         for number in range(last_process_number, new):
             result = demo_get_block_by_number(hex(number), node_url=ENDPOINT)
@@ -30,7 +32,7 @@ def main():
             count = len(txids)
             logging.info(f"process block: {number}, txids: {txids}")
             with ProcessPoolExecutor(max_workers=6) as executor:
-                futures = [executor.submit(process_tx_receipt, txid) for txid in txids]
+                futures = [executor.submit(process_tx_receipt, txid, session) for txid in txids]
                 for future in as_completed(futures):
                     break
             last_process_number = number
@@ -38,9 +40,8 @@ def main():
         time.sleep(5)
 
 
-def process_tx_receipt(txid):
-    result = demo_get_transaction_receipt(txid, node_url=ENDPOINT)
-    # logging.info(result)
+def process_tx_receipt(txid, session):
+    result = demo_get_transaction_receipt(txid, node_url=ENDPOINT, session=session)
 
 
 if __name__ == "__main__":
