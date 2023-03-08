@@ -6,6 +6,7 @@ NODE_ENDPOINT = "https://eth-mainnet.nodereal.io/v1/a4a9f892480d45e395f93945c4b7
 
 session = requests.Session()
 
+
 def demo_get_block_number(node_url=None):
     """
     query
