@@ -11,7 +11,7 @@ import time
 def main():
     while True:
         math = []
-        urls = ["https://mainnet.infura.io/v3/dd70b311da9a4147b5974c8698dec90b", "http://127.0.0.1:18759", "http://10.66.178.171:18759", "http://172.17.67.187:18759"]
+        urls = ["http://127.0.0.1:18759"]
         data = {"jsonrpc": "2.0", "method": "eth_blockNumber", "params": [], "id": 1}
         for url in urls:
             res = requests.post(url, json=data)

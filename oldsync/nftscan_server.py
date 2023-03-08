@@ -17,9 +17,7 @@ logger.addHandler(handler)
 
 UNI_CONTRACT = "0x7a250d5630b4cf539739df2c5dacb4c659f2488d"
 
-TX_NODE = "https://mainnet.infura.io/v3/ae11572b527444de8713205f186027ef"
-
-# TX_NODE = "http://127.0.0.1:18759"
+TX_NODE = "http://127.0.0.1:18759"
 
 client = pymongo.MongoClient("mongodb://nftscan:nftscan!123@124.156.168.171:27017/nftscan?authSource=nftscan")
 
