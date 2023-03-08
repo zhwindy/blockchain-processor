@@ -58,8 +58,9 @@ def demo_get_transaction_receipt(txid, node_url=None, session=None):
     url = node_url if node_url else NODE_ENDPOINT
     try:
         if session:
-            info = f"get tx receipt by session: {id(session)}"
-            # logging.info(info)
+            slug = session.headers.get("slug")
+            info = f"get {txid} receipt by session: {slug}"
+            logging.info(info)
             res = session.post(url, json=data)
         else:
             res = requests.post(url, json=data)
