@@ -30,8 +30,8 @@ def main():
                 txids = [tx.get("hash") for tx in txs]
                 count = len(txids)
                 slug = session.headers.get("slug")
-                logging.info(f"=========================start process block: {number}, tx count {count}, session: {slug}")
-                with ProcessPoolExecutor(max_workers=6) as executor:
+                logging.info(f"===========================start process block: {number}, tx count {count}, session: {slug}")
+                with ProcessPoolExecutor(max_workers=3) as executor:
                     futures = [executor.submit(process_tx_receipt, txid, session) for txid in txids]
                     for future in as_completed(futures):
                         break
