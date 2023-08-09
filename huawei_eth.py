@@ -31,7 +31,7 @@ def main():
                 count = len(txids)
                 slug = session.headers.get("slug")
                 logging.info(f"===========================start process block: {number}, tx count {count}, session: {slug}")
-                with ThreadPoolExecutor(max_workers=3) as executor:
+                with ThreadPoolExecutor(max_workers=30) as executor:
                     futures = [executor.submit(process_tx_receipt, txid, session) for txid in txids]
                     for future in as_completed(futures):
                         future.result()
