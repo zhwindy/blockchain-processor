@@ -7,12 +7,13 @@ from noderpc import demo_get_block_number, demo_get_block_by_number, demo_get_tr
 
 
 ENDPOINT = "https://www.blockchainnodeservice.cc/eth/5193088609563079"
+HEADER = {"X-BNS-AUTH-SECRET": "QKisM2NmmlyK7VddUfDj"}
 
 
 def main():
     last_process_number = 0
     while True:
-        block_number = demo_get_block_number(node_url=ENDPOINT)
+        block_number = demo_get_block_number(node_url=ENDPOINT, headers=HEADER)
         if not block_number:
             time.sleep(2)
             continue
@@ -23,7 +24,7 @@ def main():
         with requests.Session() as session:
             session.headers.update({"slug": str(last_process_number)})
             for number in range(last_process_number, new):
-                result = demo_get_block_by_number(hex(number), node_url=ENDPOINT)
+                result = demo_get_block_by_number(hex(number), node_url=ENDPOINT, headers=HEADER)
                 if not result:
                     continue
                 txs = result.get("transactions", []) if result else []
@@ -41,7 +42,7 @@ def main():
 
 
 def process_tx_receipt(txid, session):
-    result = demo_get_transaction_receipt(txid, node_url=ENDPOINT, session=session)
+    result = demo_get_transaction_receipt(txid, node_url=ENDPOINT, session=session, headers=HEADER)
 
 
 if __name__ == "__main__":
