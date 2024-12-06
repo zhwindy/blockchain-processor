@@ -13,7 +13,7 @@ def main():
     end_timestamp = 1732291200
     total_fee = 0
     while start_block_number <= end_block_number:
-        print("start block:", start_block_number)
+        # print("start block:", start_block_number)
         block_receipts = demo_get_block_receipts(hex(start_block_number), node_url=ENDPOINT)
         if not block_receipts:
             continue
