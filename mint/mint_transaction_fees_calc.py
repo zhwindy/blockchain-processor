@@ -38,7 +38,7 @@ def main():
                     block_l1_fee += l1_fee
 
         total_fee += block_fee
-        total_l1_fee += l1_fee
+        total_l1_fee += block_l1_fee
         
         print(f"block: {start_block_number}, block_fee: {block_fee}, total_fee: {total_fee}")
 
