@@ -19,7 +19,7 @@ def main():
         if not block_receipts:
             continue
         block_fee = 0
-        l1_fee = 0
+        block_l1_fee = 0
         for rece in block_receipts:
             from_addr = rece.get("from", "")
             if str(from_addr) == "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0001":
@@ -32,8 +32,10 @@ def main():
                     gas_used = int(hex_gas_used, base=16)
                     gas_price = int(hex_gas_price, base=16)
                     tx_fee = gas_used * gas_price
-                block_fee += tx_fee
-                l1_fee += int(hex_l1_fee, base=16)
+                    block_fee += tx_fee
+                if hex_l1_fee:
+                    l1_fee += int(hex_l1_fee, base=16)
+                    block_l1_fee += l1_fee
 
         total_fee += block_fee
         total_l1_fee += l1_fee
