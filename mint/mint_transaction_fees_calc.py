@@ -34,7 +34,7 @@ def main():
                     tx_fee = gas_used * gas_price
                     block_fee += tx_fee
                 if hex_l1_fee:
-                    l1_fee += int(hex_l1_fee, base=16)
+                    l1_fee = int(hex_l1_fee, base=16)
                     block_l1_fee += l1_fee
 
         total_fee += block_fee
