@@ -3,7 +3,7 @@ import time
 from noderpc import demo_get_block_receipts
 
 
-ENDPOINT = "https://mainnet.infura.io/v3/c107c439187e4b7c8b18c8684ba34a86"
+ENDPOINT = "https://eth-mainnet.g.alchemy.com/v2/orbv9zYIZFY4ZG7MQ4yiYEg9Gh8RIOYi"
 
 
 def main():
