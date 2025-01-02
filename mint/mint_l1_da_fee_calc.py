@@ -3,7 +3,7 @@ import time
 from noderpc import demo_get_block_receipts
 
 
-ENDPOINT = "https://eth-mainnet.g.alchemy.com/v2/orbv9zYIZFY4ZG7MQ4yiYEg9Gh8RIOYi"
+ENDPOINT = "https://eth-mainnet.g.alchemy.com/v2/z9KkNczKr2lO9NW60WgVjeyf2VJQCclI"
 
 
 def main():
@@ -43,7 +43,7 @@ def main():
         
         print(f"block: {start_block_number}, block_l1_fee: {block_l1_fee}, block_blob_fee: {block_blob_fee}")
 
-        time.sleep(0.1)
+        time.sleep(1)
         start_block_number+=1
     
     print("total l1 fee:", total_l1_fee)
